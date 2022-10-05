@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  IsUUID,
   MaxLength,
   MinLength,
   registerDecorator,
@@ -16,7 +17,7 @@ import {
   HasMimeType,
   IsFile,
   MaxFileSize,
-  MemoryStoredFile,
+  FileSystemStoredFile,
 } from 'nestjs-form-data';
 
 @ValidatorConstraint({ name: 'isEmailOrPhone' })
@@ -81,5 +82,17 @@ export class SigUpDto {
   @IsFile()
   @MaxFileSize(1e6)
   @HasMimeType(['image/jpeg', 'image/png'])
-  avatar?: MemoryStoredFile;
+  avatar?: FileSystemStoredFile;
+}
+export class ForgotPasswordDto {
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsUUID()
+  userID: string;
+}
+export class ChangePasswordDto {
+  @IsString()
+  newPassword: string;
 }

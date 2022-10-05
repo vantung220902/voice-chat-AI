@@ -18,6 +18,9 @@ class User extends BaseEntity {
   @Column('character varying', { name: 'last_name', length: 255 })
   lastName: string;
 
+  @Column('character varying', { name: 'avatar', length: 255, nullable: true })
+  avatar?: string | null;
+
   @Column('character varying', { length: 255 })
   password: string;
 
@@ -29,6 +32,9 @@ class User extends BaseEntity {
 
   @Column('integer', { default: 0, name: 'token_version' })
   tokenVersion?: number;
+
+  @Column('character varying', { name: 'image_id', nullable: true })
+  imageId?: string;
 
   @Column('enum', {
     enum: UserRole,

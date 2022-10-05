@@ -5,7 +5,7 @@ import session from 'express-session';
 import { __prod__ } from './constants';
 import MongoStore from 'connect-mongo';
 
-async function bootstrap() {
+(async () => {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
@@ -27,6 +27,5 @@ async function bootstrap() {
       resave: false,
     }),
   );
-  await app.listen(1234);
-}
-bootstrap();
+  await app.listen(process.env.PORT || 1234);
+})();

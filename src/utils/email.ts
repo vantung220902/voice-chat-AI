@@ -38,7 +38,7 @@ export const sendEmail = async ({
     console.error(error);
   }
 };
-export const htmlForgetEmail = (resetToken: string, userId: number) => `
+export const htmlForgetEmail = (accessToken: string, resetToken: string) => `
 <!doctype html>
 <html lang="en-US">
 <head>
@@ -88,7 +88,7 @@ export const htmlForgetEmail = (resetToken: string, userId: number) => `
                                             password has been generated for you and it is going to expire in 5 minutes . To reset your password, click the
                                             following link and follow the instructions.
                                         </p>
-                                        <a href='http://localhost:3000/auth/change-password?token=${resetToken}&userId=${userId}'
+                                        <a href='http://localhost:3000/auth/change-password?token=${accessToken}&refresh=${resetToken}'
                                             style="background:#20e277;text-decoration:none !important; font-weight:500;
                                              margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;
                                              padding:10px 24px;display:inline-block;border-radius:50px;">Click Here 👻</a>
@@ -104,7 +104,7 @@ export const htmlForgetEmail = (resetToken: string, userId: number) => `
                     </tr>
                     <tr>
                         <td style="text-align:center;">
-                            <p style="font-size:14px; color:rgba(69, 80, 86, 0.7411764705882353); line-height:18px; margin:0 0 0;">&copy; <strong>vantung220902@gmail.com</strong></p>
+                            <p style="font-size:14px; color:rgba(69, 80, 86, 0.7411764705882353); line-height:18px; margin:0 0 0;">&copy; <strong>voicechatai@gmail.com</strong></p>
                         </td>
                     </tr>
                     <tr>
@@ -179,7 +179,7 @@ export const htmlConfirmationEmail = (code: string) => `
                     </tr>
                     <tr>
                         <td style="text-align:center;">
-                            <p style="font-size:14px; color:rgba(69, 80, 86, 0.7411764705882353); line-height:18px; margin:0 0 0;">&copy; <strong>vantung220902@gmail.com</strong></p>
+                            <p style="font-size:14px; color:rgba(69, 80, 86, 0.7411764705882353); line-height:18px; margin:0 0 0;">&copy; <strong>voicechatai@gmail.com</strong></p>
                         </td>
                     </tr>
                     <tr>

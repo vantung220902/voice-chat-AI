@@ -16,4 +16,3 @@ export class ConfirmationCode {
 
 export const ConfirmationCodeSchema =
   SchemaFactory.createForClass(ConfirmationCode);
-ConfirmationCodeSchema.index({ createdAt: 1 }, { expireAfterSeconds: 300 });

@@ -1,14 +1,14 @@
-import { RequestContext } from 'src/config/context';
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { AuthServices } from './../auth.service';
+import { RequestContext } from 'src/modules/context/types';
+import { UserService } from 'src/modules/user/user.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     config: ConfigService,
-    private readonly authService: AuthServices,
+    private readonly userService: UserService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -22,12 +22,17 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       sub: string;
       email: string;
       role: string;
+      tokenVersion: number;
       iat: number;
       exp: number;
     },
   ) {
-    const user = await this.authService.findUserById(payload.sub);
-    if (!user || userID !== user?.userID)
+    const user = await this.userService.findUserById(payload.sub);
+    if (
+      !user ||
+      userID !== user.userID ||
+      payload.tokenVersion !== user.tokenVersion
+    )
       throw new ForbiddenException('Credentials taken');
     delete user.password;
     return user;
