@@ -165,7 +165,7 @@ export const htmlConfirmationEmail = (code: string) => `
                                             Below is your confirmation code, is's going to expire in 5 minutes
                                         </p>
                                         <p style="background:#20e277;text-decoration:none !important; font-weight:500;
-                                             margin-top:35px; color:#fff;text-transform:uppercase; font-size:24px;
+                                             margin-top:35px; color:#fff;font-size:24px;
                                              padding:10px 24px;display:inline-block;border-radius:50px;">${code}</p>
                                     </td>
                                 </tr>

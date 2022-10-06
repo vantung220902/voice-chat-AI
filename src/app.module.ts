@@ -7,6 +7,8 @@ import { MorganInterceptor, MorganModule } from 'nest-morgan';
 import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { RoomModule } from './modules/room/room.module';
+import { MessageModule } from './modules/message/message.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     MorganModule,
     AuthModule,
     UserModule,
+    RoomModule,
+    MessageModule,
   ],
   providers: [
     {

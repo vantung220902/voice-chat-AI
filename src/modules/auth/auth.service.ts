@@ -11,7 +11,7 @@ import {
   ConfirmationCode,
   ConfirmationCodeDocument,
 } from 'src/schemas/confirmationCode.schema';
-import User from '../../entities/User.entity';
+import User from '../user/entities/User.entity';
 import {
   htmlConfirmationEmail,
   htmlForgetEmail,
@@ -84,9 +84,10 @@ export class AuthServices {
       delete user.password;
       session.userID = user.userID;
       session.accessToken = accessToken;
-      await this.codeModel.deleteOne({
-        id: confirmationCode.id,
-      });
+      if (confirmationCode?.id)
+        await this.codeModel.deleteOne({
+          id: confirmationCode.id,
+        });
       return {
         code: 200,
         success: true,
@@ -130,8 +131,7 @@ export class AuthServices {
       };
     }
     const hashPassword = await argon2.hash(password);
-    let url = null;
-    let imageId = null;
+    let photo = null;
     if (avatar) {
       const response = await this.cloudinaryService.uploadImage(avatar);
       if (!response.success)
@@ -140,10 +140,9 @@ export class AuthServices {
           success: false,
           message: response.error.message,
         };
-      url = response.url;
-      imageId = response.publicId;
+      photo = response;
     }
-    await this.userService.insertUser(
+    const user = await this.userService.insertUser(
       {
         email,
         firstName,
@@ -151,10 +150,9 @@ export class AuthServices {
         password: hashPassword,
         phone,
       },
-      url,
-      imageId,
+      photo,
     );
-    const user = await this.userService.findUserByEmail(email);
+
     if (!user) {
       throw new ForbiddenException('Credentials incorrect');
     }
@@ -231,6 +229,7 @@ export class AuthServices {
         },
       };
     } catch (error) {
+      console.log('error', error);
       return {
         code: 401,
         success: false,

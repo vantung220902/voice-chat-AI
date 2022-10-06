@@ -11,7 +11,7 @@ import {
   Param,
 } from '@nestjs/common';
 import { GetUser } from '../auth/decorator';
-import User from 'src/entities/User.entity';
+import User from 'src/modules/user/entities/User.entity';
 import { UserService } from './user.service';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 import { ParseUUIDPipe } from '@nestjs/common/pipes';

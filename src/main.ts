@@ -4,7 +4,8 @@ import { AppModule } from './app.module';
 import session from 'express-session';
 import { __prod__ } from './constants';
 import MongoStore from 'connect-mongo';
-
+import cors from 'cors';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 (async () => {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
@@ -12,6 +13,7 @@ import MongoStore from 'connect-mongo';
       whitelist: true,
     }),
   );
+  app.use(cors());
   app.use(
     session({
       name: process.env.COOKIE_NAME,
@@ -27,5 +29,6 @@ import MongoStore from 'connect-mongo';
       resave: false,
     }),
   );
+  app.useWebSocketAdapter(new IoAdapter(app));
   await app.listen(process.env.PORT || 1234);
 })();

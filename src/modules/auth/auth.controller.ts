@@ -1,7 +1,7 @@
-import { Controller, Post, Req, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Req, HttpStatus, Delete } from '@nestjs/common';
 import { Body, Get, HttpCode, Put, UseGuards } from '@nestjs/common/decorators';
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
-import User from 'src/entities/User.entity';
+import User from 'src/modules/user/entities/User.entity';
 import { ContextSession } from '../context/decorator/index.decorator';
 import { RequestContext } from '../context/types';
 import { AuthServices } from './auth.service';
@@ -31,7 +31,7 @@ export class AuthController {
     return this.authService.signIn(dto, session);
   }
 
-  @Get('logout')
+  @Delete('logout')
   @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.OK)
   logout(@Req() req: RequestContext, @GetUser() user: User) {

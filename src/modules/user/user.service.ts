@@ -1,32 +1,39 @@
 import { UpdateUserDto } from './dto/user.dto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import User from 'src/entities/User.entity';
+import User from 'src/modules/user/entities/User.entity';
 import { Repository } from 'typeorm';
 import { SigUpDto } from '../auth/dto';
 import * as argon2 from 'argon2';
 import { IResponse } from '../auth/types/i.base';
 import { CloudinaryService } from '../cloudrary/cloudrary.service';
+import { Photo } from './entities/Photo.entity';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(Photo)
+    private readonly photoRepo: Repository<Photo>,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
   findUserByEmailOrPhone(emailOrPhone: string): Promise<User> {
     return this.userRepo.findOne({
       where: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+      relations: ['photo'],
     });
   }
   findUserByEmailAndPhone(email: string, phone: string): Promise<User> {
     return this.userRepo.findOne({
       where: [{ email }, { phone }],
+      relations: ['photo'],
     });
   }
   findUserByEmail(email: string): Promise<User> {
     return this.userRepo.findOne({
-      where: { email },
+      where: {
+        email,
+      },
     });
   }
   findUserById(id: string): Promise<User> {
@@ -34,14 +41,33 @@ export class UserService {
       where: {
         userID: id,
       },
+      relations: ['photo'],
     });
   }
-  insertUser(body: SigUpDto, avatar = null, imageId = null) {
-    return this.userRepo.insert({
+  async insertUser(
+    body: SigUpDto,
+    payload: { url: string; publicId: string } | undefined,
+  ) {
+    let photoId = null;
+    if (payload) {
+      await this.photoRepo.insert({
+        publicId: payload.publicId,
+        url: payload.url,
+      });
+      const photo = await this.photoRepo.findOne({
+        where: {
+          publicId: payload.publicId,
+        },
+      });
+      photoId = photo.id;
+    }
+    console.log('photoId', photoId);
+    await this.userRepo.insert({
       ...body,
-      avatar,
-      imageId,
+      photoId,
     });
+    const user = await this.findUserByEmail(body.email);
+    return user;
   }
   async updateUser(id: string, body: UpdateUserDto): Promise<IResponse> {
     try {
@@ -63,17 +89,25 @@ export class UserService {
         user.password = hashPassword;
       }
       if (body?.avatar) {
-        const response = await this.cloudinaryService.uploadImage(body.avatar);
-        if (!response.success)
+        const { success, publicId, url, error } =
+          await this.cloudinaryService.uploadImage(body.avatar);
+        if (!success)
           return {
             code: 401,
             success: false,
-            message: response.error.message,
+            message: error.message,
           };
-        await this.cloudinaryService.removeImage(user.imageId);
-        user.avatar = response.url;
+        const photo = await this.photoRepo.findOne({
+          where: {
+            id: user.photoId,
+          },
+        });
+        await this.cloudinaryService.removeImage(photo.publicId);
+        photo.url = url;
+        photo.publicId = publicId;
+        await this.photoRepo.save(photo);
       }
-      await user.save();
+      await this.userRepo.save(user);
       delete user.password;
       return {
         code: 200,

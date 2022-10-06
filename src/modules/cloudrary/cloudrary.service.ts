@@ -22,6 +22,7 @@ export class CloudinaryService {
         cloudinary.uploader.upload(
           file.path,
           (error: Error, res: { url: string; public_id: string }) => {
+            console.log('res', res);
             return resolve({
               success: error ? false : true,
               url: res?.url,
