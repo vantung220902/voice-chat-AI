@@ -39,7 +39,7 @@ export class UserService {
   findUserById(id: string): Promise<User> {
     return this.userRepo.findOne({
       where: {
-        userID: id,
+        userId: id,
       },
       relations: ['photo'],
     });

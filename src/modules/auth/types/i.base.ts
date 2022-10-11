@@ -10,7 +10,7 @@ export interface IError {
   message: string;
 }
 export interface UserSecretJWT {
-  userID: string;
+  userId: string;
   email: string;
   role: string;
   tokenVersion?: number;

@@ -90,7 +90,7 @@ export class ForgotPasswordDto {
   email: string;
 
   @IsUUID()
-  userID: string;
+  userId: string;
 }
 export class ChangePasswordDto {
   @IsString()

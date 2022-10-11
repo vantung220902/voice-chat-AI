@@ -42,7 +42,7 @@ export class AuthController {
   @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.OK)
   refreshToken(@Req() req: RequestContext, @GetUser() user: User) {
-    return this.authService.refreshToken(req, user.userID);
+    return this.authService.refreshToken(req, user.userId);
   }
 
   @Get('confirmCode/:code/:userID')

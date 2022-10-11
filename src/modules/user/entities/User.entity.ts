@@ -23,7 +23,7 @@ class User extends BaseEntity {
     name: 'user_id',
     default: () => 'uuid_generate_v4()',
   })
-  userID: string;
+  userId: string;
 
   @Column('character varying', { name: 'first_name', length: 255 })
   firstName: string;

@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
   async validate(
-    { session: { userID } }: RequestContext,
+    { session: { userId } }: RequestContext,
     payload: {
       sub: string;
       email: string;
@@ -30,7 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     const user = await this.userService.findUserById(payload.sub);
     if (
       !user ||
-      userID !== user.userID ||
+      userId !== user.userId ||
       payload.tokenVersion !== user.tokenVersion
     )
       throw new ForbiddenException('Credentials taken');

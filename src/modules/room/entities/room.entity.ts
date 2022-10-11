@@ -28,7 +28,7 @@ export class Room extends BaseEntity {
     inverseJoinColumns: [
       {
         name: 'ru_user_id',
-        referencedColumnName: 'userID',
+        referencedColumnName: 'userId',
       },
     ],
   })

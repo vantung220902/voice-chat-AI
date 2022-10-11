@@ -48,13 +48,13 @@ export class AuthServices {
   }
   async verifyCode(
     code: string,
-    userID: string,
+    userId: string,
     session: SessionContext,
   ): Promise<IResponse> {
     try {
       const confirmationCode = await this.codeModel.findOne({
         code,
-        userID,
+        userId,
       });
       if (!confirmationCode)
         return {
@@ -74,7 +74,7 @@ export class AuthServices {
       }
       const tokenVersion = randomInt(10);
       const { accessToken, refreshToken } = await this.signToken({
-        userID,
+        userId,
         email: user.email,
         role: user.role,
         tokenVersion,
@@ -82,7 +82,7 @@ export class AuthServices {
       user.tokenVersion = tokenVersion;
       await user.save();
       delete user.password;
-      session.userID = user.userID;
+      session.userId = user.userId;
       session.accessToken = accessToken;
       if (confirmationCode?.id)
         await this.codeModel.deleteOne({
@@ -158,7 +158,7 @@ export class AuthServices {
     }
 
     const code = renderCode(5);
-    await this.createConfirmationCode(code, user.userID);
+    await this.createConfirmationCode(code, user.userId);
     await sendEmail({
       html: htmlConfirmationEmail(code),
       to: email,
@@ -205,10 +205,10 @@ export class AuthServices {
             { field: 'password', message: 'Password  is incorrect' },
           ],
         };
-      const { role, userID } = userExists;
+      const { role, userId } = userExists;
       const tokenVersion = randomInt(10);
       const { accessToken, refreshToken } = await this.signToken({
-        userID,
+        userId,
         email: userExists.email,
         role,
         tokenVersion,
@@ -216,7 +216,7 @@ export class AuthServices {
       userExists.tokenVersion = tokenVersion;
       await userExists.save();
       delete userExists.password;
-      session.userID = userExists.userID;
+      session.userId = userExists.userId;
       session.accessToken = accessToken;
       return {
         code: 200,
@@ -239,13 +239,13 @@ export class AuthServices {
     }
   }
   async signToken({
-    userID,
+    userId,
     email,
     role,
     tokenVersion,
   }: UserSecretJWT): Promise<{ accessToken: string; refreshToken: string }> {
     const data = {
-      sub: userID,
+      sub: userId,
       email,
       role,
       tokenVersion,
@@ -263,18 +263,18 @@ export class AuthServices {
   }
 
   async forgotPassword(
-    { email, userID }: ForgotPasswordDto,
+    { email, userId }: ForgotPasswordDto,
     session: SessionContext,
   ) {
-    const user = await this.userService.findUserById(userID);
+    const user = await this.userService.findUserById(userId);
     if (!user) throw new ForbiddenException('Credentials incorrect');
     const { accessToken, refreshToken } = await this.signToken({
-      userID,
+      userId,
       email: user.email,
       role: user.role,
       tokenVersion: user.tokenVersion,
     });
-    session.userID = userID;
+    session.userId = userId;
     session.accessToken = accessToken;
     try {
       await sendEmail({
@@ -328,7 +328,7 @@ export class AuthServices {
         secret: this.config.get('JWT_SECRET_REFRESH'),
       }) as UserSecretJWT;
       const user = await this.userService.findUserById(userID);
-      if (decoded.tokenVersion !== user.tokenVersion || !request.session.userID)
+      if (decoded.tokenVersion !== user.tokenVersion || !request.session.userId)
         throw new ForbiddenException('Credentials taken');
       user.tokenVersion = decoded.tokenVersion;
       await user.save();

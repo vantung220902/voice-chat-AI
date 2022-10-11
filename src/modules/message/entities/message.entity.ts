@@ -24,7 +24,7 @@ export class Message extends BaseEntity {
   userId: string;
 
   @ManyToOne(() => User, (user) => user.messages)
-  @JoinColumn({ name: 'message_user_id', referencedColumnName: 'userID' })
+  @JoinColumn({ name: 'message_user_id', referencedColumnName: 'userId' })
   user: User;
 
   @CreateDateColumn({
